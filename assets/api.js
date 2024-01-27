@@ -1,6 +1,6 @@
-import { API_URL } from "./http";
 import axios from 'axios';
-import { config } from "./http";
+import config from "../http/config";
+import { API_URL } from '../http/config';
 
 export class Api {
     static async loginUser(username, password) {

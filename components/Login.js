@@ -9,7 +9,7 @@ export default function Login({updating, setUpdating}) {
     const [password, setPassword] = useState('');
 
     const login = async () => {
-        const r = await Api.loginUser(username, password);
+        const r = await Api.loginUser(username.toLowerCase(), password.toLowerCase());
 
         await AsyncStorage.setItem('authToken', r.data.token);
         setUpdating(updating + 1);

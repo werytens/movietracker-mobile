@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { StatusBar, StyleSheet, Text, View } from 'react-native';
-import axios from 'axios';
-import FilmSearch from './components/FilmSearch';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './components/Login';
-import { API_URL } from './assets/http';
 import { Api } from './assets/api';
 import Films from './components/Films';
 
