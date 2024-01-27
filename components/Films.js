@@ -46,7 +46,11 @@ export default function Films({ id }) {
                                 </View>
                             </View>
                         ))
-                        : null
+                        : <View>
+                        <StatusText>
+                          Loading your watchlist!
+                        </StatusText>
+                      </View>
                 }
             </List>
         </Container>

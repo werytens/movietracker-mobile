@@ -4,13 +4,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Login from './components/Login';
 import { Api } from './assets/api';
 import Films from './components/Films';
+import {LogBox} from 'react-native';
 
 export default function App() {
 
     const [user, setUser] = useState();
     const [auth, setAuth] = useState(false);
 
-    const [updating, setUpdating] = useState(0);
+    const [updating, setUpdating] = useState(0);0
+
+    LogBox.ignoreAllLogs();
 
     useEffect(() => {
         const auth = async () => {

@@ -15,103 +15,141 @@ Notifications.setNotificationHandler({
 });
 
 export default function FilmSearch({ userId, updatingFilms, setUpdatingFilms }) {
-    const [keywords, setKeywords] = useState('');
-    const [films, setFilms] = useState([]);
-    const [expoPushToken, setExpoPushToken] = useState('');
-      const [notification, setNotification] = useState(false);
-      const notificationListener = useRef();
-      const responseListener = useRef();
+  const [keywords, setKeywords] = useState('');
+  const [films, setFilms] = useState([]);
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
-      useEffect(() => {
-        registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
-
-        notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
-          setNotification(notification);
-        });
-
-        responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-          console.log(response);
-        });
-
-        return () => {
-          Notifications.removeNotificationSubscription(notificationListener.current);
-          Notifications.removeNotificationSubscription(responseListener.current);
-        };
-      }, []);
-
-
-    const getSearchedFilms = async () => {
-        if (keywords.length > 0) {
-            const response = await kinopoiskApi.getFilms(keywords);
-            setFilms(response.data.films);
-        }
+  useEffect(() => {
+    const addNotify = async () => {
+      await welcomeNotification();
     }
+    addNotify();
+  }, [])
 
-    const addFilm = async (id) => {
-        await Api.addFilm(userId, id);
-        setFilms([]);
-        setKeywords('');
-        setUpdatingFilms(updatingFilms + 1);
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+      setNotification(notification);
+    });
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response);
+    });
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+  }, []);
+
+
+  const getSearchedFilms = async () => {
+    if (keywords.length > 0) {
+      const response = await kinopoiskApi.getFilms(keywords);
+      setFilms(response.data.films);
     }
+  }
 
-    return (
-        <Container>
-            <Input
-                placeholder='Input film name'
-                onChangeText={(text) => { setKeywords(text) }}
-            />
-            {
-                keywords ?
-                    <Button
-                        onPress={getSearchedFilms}
-                        title='Search'
-                        color={'#515e73'}
+  const addFilm = async (id, name) => {
+    const {data} = await Api.addFilm(userId, id);
+    
+    console.log(data.isOk);
+
+    if (data.isOk == false) {
+      await simpleNotification(data.message)
+      setKeywords('');
+      return
+    }
+    
+    setFilms([]);
+    setKeywords('');
+    setUpdatingFilms(updatingFilms + 1);
+    
+    
+    
+    await filmAddNotificaiton(name);
+  }
+
+  return (
+    <Container>
+      <Input
+        placeholder='Input film name'
+        onChangeText={(text) => { setKeywords(text) }}
+      />
+      {
+        keywords ?
+          <Button
+            onPress={getSearchedFilms}
+            title='Search'
+            color={'#515e73'}
+          />
+          : null
+      }
+      <List>
+        {
+          films && keywords ?
+            <View>
+              {
+                films?.map((item, index) => (
+                  <Film
+                    key={index}
+                    onPress={() => { addFilm(item.filmId, item.nameEn) }}
+                  >
+                    <FilmImage
+                      source={{
+                        uri: item.posterUrl
+                      }}
+                      style={{ width: 110, height: 180, objectFit: 'cover' }}
                     />
-                    : null
-            }
-            <List>
-                {
-                    films && keywords ?
-                        <View>
-                            {
-                                films?.map((item, index) => (
-                                    <Film
-                                        key={index}
-                                        onPress={() => { addFilm(item.filmId) }}
-                                    >
-                                        <FilmImage
-                                            source={{
-                                                uri: item.posterUrl
-                                            }}
-                                            style={{ width: 110, height: 180, objectFit: 'cover' }}
-                                        />
-                                        <Flex>
-                                            <WhiteText>
-                                                {item.nameEn ? item.nameEn : item.nameRu}
-                                            </WhiteText>
-                                            <WhiteText>
-                                                {item.description}
-                                            </WhiteText>
-                                        </Flex>
-                                    </Film>
-                                ))
-                            }
-                        </View>
-                        : null
-                }
-            </List>
-        </Container>
-    );
+                    <Flex>
+                      <WhiteText>
+                        {item.nameEn ? item.nameEn : item.nameRu}
+                      </WhiteText>
+                      <WhiteText>
+                        {item.description}
+                      </WhiteText>
+                    </Flex>
+                  </Film>
+                ))
+              }
+            </View>
+            : null
+        }
+      </List>
+    </Container>
+  );
 }
 
-async function schedulePushNotification() {
-  await Notifications.scheduleNotificationAsync({
+async function welcomeNotification() {
+  Notifications.scheduleNotificationAsync({
     content: {
-      title: "You've got mail! 📬",
-      body: 'Here is the notification body',
-      data: { data: 'goes here' },
+      title: 'Welcome to Movietracker!',
+      body: 'App loaded :)'
     },
-    trigger: { seconds: 2 },
+    trigger: null,
+  });
+}
+
+async function filmAddNotificaiton(filmName) {
+  Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Added new film!',
+      body: `You have successfully added ${filmName} to your watchlist!`,
+    },
+    trigger: null,
+  });
+}
+
+async function simpleNotification(text) {
+  Notifications.scheduleNotificationAsync({
+    content: {
+      title: text,
+    },
+    trigger: null,
   });
 }
 
@@ -138,8 +176,6 @@ async function registerForPushNotificationsAsync() {
       alert('Failed to get push token for push notification!');
       return;
     }
-    // Learn more about projectId:
-    // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
     token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
     console.log(token);
   } else {
