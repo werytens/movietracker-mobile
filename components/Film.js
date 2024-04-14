@@ -1,5 +1,5 @@
 import styled from 'styled-components/native';
-import { StatusBar, StyleSheet, Text, TextInput, View, Image, TouchableOpacity, Button } from 'react-native';
+import { Text,  View, Image, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import { Api } from '../assets/api';
 
@@ -45,19 +45,43 @@ export default function Film({ film, userId, updatingFilms, setUpdatingFilms }) 
                     <FilmText>
                         {film.genre}
                     </FilmText>
-                    <View>
-                        <Button title='Favorite' onPress={() => {changeStatus(0)}} />
-                        <Button title='Planned' onPress={() => {changeStatus(1)}} />
-                        <Button title='Delayed' onPress={() => {changeStatus(2)}} />
-                        <Button title='Watching' onPress={() => {changeStatus(3)}} />
-                        <Button title='Watched' onPress={() => {changeStatus(4)}} />
-                        <Button title='Abandoned' onPress={() => {changeStatus(5)}} />
-                    </View>
+                    <ButtonsGroup>
+                        <FilmStatusButton onPress={() => {changeStatus(0)}}><StatusChangeText>F</StatusChangeText></FilmStatusButton>
+                        <FilmStatusButton onPress={() => {changeStatus(1)}}><StatusChangeText>P</StatusChangeText></FilmStatusButton>
+                        <FilmStatusButton onPress={() => {changeStatus(2)}}><StatusChangeText>D</StatusChangeText></FilmStatusButton>
+                        <FilmStatusButton onPress={() => {changeStatus(3)}}><StatusChangeText>WG</StatusChangeText></FilmStatusButton>
+                        <FilmStatusButton onPress={() => {changeStatus(4)}}><StatusChangeText>WD</StatusChangeText></FilmStatusButton>
+                        <FilmStatusButton onPress={() => {changeStatus(5)}}><StatusChangeText>A</StatusChangeText></FilmStatusButton>
+                    </ButtonsGroup>
                 </View>
             </FilmDescription>
         </FilmBlock>
     )
 }
+
+const ButtonsGroup = styled(View)`
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`
+
+const FilmStatusButton = styled(TouchableOpacity)`
+    background-color: #161b22;
+    height: 50px;
+    width: 50px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+`
+
+const StatusChangeText = styled(Text)`
+    color: white;
+    font-size: 20px;
+    font-weight: 700;
+`
 
 const FilmBlock = styled(View)`
     padding-top: 10px;

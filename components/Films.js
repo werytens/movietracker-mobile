@@ -1,4 +1,4 @@
-import { StatusBar, StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import FilmSearch from './FilmSearch';
 import { useState, useEffect } from 'react';

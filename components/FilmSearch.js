@@ -1,4 +1,4 @@
-import { Button, StatusBar, StyleSheet, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
+import { Button, Text, TextInput, View, Image, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import styled from 'styled-components/native';
 import { useState, useEffect, useRef } from 'react';
